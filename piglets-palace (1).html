@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piglet's Palace 🌻</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(to bottom, #FFE5B4 0%, #FFDAB9 50%, #FFB6C1 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin: 30px 0;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #8B4513;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #654321;
+            font-style: italic;
+        }
+
+        .progress {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 15px 30px;
+            border-radius: 30px;
+            margin: 20px 0;
+            font-size: 1.1em;
+            color: #654321;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in 0.3s both;
+        }
+
+        .garden {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 30px;
+            max-width: 900px;
+            width: 100%;
+            margin: 20px 0;
+            padding: 20px;
+        }
+
+        .flower-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .flower-container:hover {
+            transform: scale(1.1);
+        }
+
+        .flower {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+
+        .sunflower {
+            animation: bloom 0.8s ease-out;
+        }
+
+        @keyframes bloom {
+            from {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .petals {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .petal {
+            position: absolute;
+            width: 30px;
+            height: 50px;
+            background: #FFD700;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0% 100%;
+        }
+
+        .petal:nth-child(1) { transform: translate(-50%, -50%) rotate(0deg) translateY(-35px); }
+        .petal:nth-child(2) { transform: translate(-50%, -50%) rotate(45deg) translateY(-35px); }
+        .petal:nth-child(3) { transform: translate(-50%, -50%) rotate(90deg) translateY(-35px); }
+        .petal:nth-child(4) { transform: translate(-50%, -50%) rotate(135deg) translateY(-35px); }
+        .petal:nth-child(5) { transform: translate(-50%, -50%) rotate(180deg) translateY(-35px); }
+        .petal:nth-child(6) { transform: translate(-50%, -50%) rotate(225deg) translateY(-35px); }
+        .petal:nth-child(7) { transform: translate(-50%, -50%) rotate(270deg) translateY(-35px); }
+        .petal:nth-child(8) { transform: translate(-50%, -50%) rotate(315deg) translateY(-35px); }
+
+        .center {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #8B4513 0%, #654321 100%);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .stem {
+            width: 4px;
+            height: 40px;
+            background: #228B22;
+            margin: 0 auto;
+        }
+
+        .locked {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .locked:hover {
+            transform: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFEFD5 100%);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: #8B4513;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-content p {
+            color: #654321;
+            line-height: 1.8;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            color: #8B4513;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: transform 0.2s;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .butterfly {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+            animation: flutter 3s infinite ease-in-out;
+            z-index: 100;
+        }
+
+        @keyframes flutter {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            25% { transform: translateY(-20px) translateX(20px); }
+            50% { transform: translateY(-10px) translateX(-10px); }
+            75% { transform: translateY(-25px) translateX(15px); }
+        }
+
+        .welcome-message {
+            background: rgba(255, 255, 255, 0.4);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-width: 600px;
+            text-align: center;
+            color: #654321;
+            font-size: 1.1em;
+            line-height: 1.6;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in 0.6s both;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌻 Piglet's Palace 🌻</h1>
+        <p>A garden grown with love</p>
+    </div>
+
+    <div class="welcome-message">
+        Welcome to your special garden! All 30 sunflowers have bloomed just for you. Click on any flower to read the message inside. 💛
+    </div>
+
+    <div class="progress">
+        <span id="progress-text">Flowers bloomed: 0 / 30</span>
+    </div>
+
+    <div class="garden" id="garden"></div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 id="modal-title">Sunflower #1</h2>
+            <p id="modal-message"></p>
+        </div>
+    </div>
+
+    <script>
+        // 30 personalized messages
+        const messages = [
+            "You have the prettiest smile of all people which lights up my day everytime I look at it. Keep smiling PP🐖🫶🏻",
+            "My beautiful cutu sweetu babes, you are the peace I have always longed for. You are my home and I love you cutu❤️",
+            "My shonudi monudi, you have the prettiest eyes, I can drown in them. My cutu angel💕🤭",
+            "When I first saw you, I literally melted. You are very beautiful and seeing you gives me a sense of comfort which I hadn't experienced before you. I love you PP🫶🏻",
+            "Your giggles, OMG😩. You laugh and giggle so cutu babes jaise. I can listen to them forever 🤤.",
+            "After a stressful day, your voice feels like a breeze of cold and calm wind. It relaxes me. You have a sweetu voice and I get enough of it😩",
+            "The way your voice changes and you says things quickly quickly when you get excited is so cutu🤭🫶🏻 Meri chhotu baby ho ekdum pyaari si 😩❤️❤️❤️",
+            "I remember the day we had our first ever call and we talked for close to 2 hours. We totally clicked and I knew there is something. I am so grateful we are still together and going strong. I hope this continues for the rest of the life baby. I love you🩷",
+            "Even though I get angry at it sometimes but I genuinely love it when you get all baddie and dramatic🤭. I love to baby you cause you're my precious baby girl PP. And I am so sorry baby I get angry but I love it don't ever stop sweetu babes🤭🫶🏻❤️❤️.",
+            "Your little video notes and photos always make my days🤭🫶🏻🩷. You are such a special person, i am either thinking about you, planning something which we will do or talking to you. I can't stay away from you💕",
+            "I always remember the day I said I love you to you for the first time😭. I was super nervous and I gathered all my courage to say. I was nervous mostly because I am scared of losing you. Tab bhi tha aaj bhi hu and I want you to have the best life🩷🫶🏻🤭",
+            "I love the fact that we are always so present in each other's life even when we are so far away. I am so fortunate to have a loving girlfriend like you 🤭🤭🤭.",
+            "You make me smile without any reason. You have filled my life with so much happiness. I love you babudi..! 🩷💕",
+            "You have the most fantastic and cutu cheeks ever. I love how they turn pink. You are such a cutu baby always keep smiling🩷🤭🤭🤭",
+            "My shonudi monudi baby piglet. I get so happy when you baby me🩷🤭🤭.",
+            "There's a different sense of happiness now because I feel like you have accepted me as a life partner, like your sister knows about me and we help her with her boyfriend problems. Not just her but like you have told your friends about me as well and it feels nice🥺. I feel included. 🤭",
+            "We have grown so close and it feels so real bhai we have also started discussing names for our kids😭🤣. It's cringe but it's sooo cutee😩😩.",
+            "I remember the day when you were having a bad day and we decided to get on a call. It was back in August and my parents were out for the night. We talked for 3 hours and that was the best 3 hours of my life. We had so much fun 🤣🤣🤭. I remember you laughing, spilling tea and gossiping. We also bitched about a lot of people🤭. It was so good🤤🫶🏻.",
+            "The first time you ever got angry at me, that stupid post about leading girls this summer😭😭😭. The post was stupid but your reaction to it was cuteee. I melted. That was when I first felt that you like me too. It clean bowled me as well, my feelings for you became more intense after it. 😋💕.",
+            "I love how you are this cute little girl who is always giggling, having fun, being an absolute goofball cutu sweetu babes while also being this ambitious and mature girl which goals. I love the fact that you can be fun while also being productive. My shonu monu smartu babes. 💕🩷",
+            "You are by far the most creative woman I have ever seen. You have an out-of-the-box thinking.  Best ever smartu babes❤️",
+            "Purva you're the most loving person I have ever seen. I remember you were telling me about your cow mugs and sippers, or that ganesh ji murti, or the burberry ki khali bottle. You describe things so lovingly, you even take care of them. Even your plushies bhai. And then me as well😋. I feel so loved by you I can't even describe the feeling. I turn into a little boy 😋🤭🤭",
+            "I can't tell purva how supportive you have been in my CAT prep. You say it's nothing but baby you are one reason why I was so calm. You have always motivated me and that's one reason I was able to score 98. Baby thank you..!!! I love you babyy🥺🩷❤️",
+            "I absolutely adore the fun vibes you resonate. You naturally lift my mood. You are always playing, pulling my leg and brining this golden retriever energy around. I get so happy. Talking to you instantly makes my day warm😋🤭.",
+            "People say managing Long distance relationship is tough but I say with the right person everything is so easy. I do miss you and crave your touch a lot. But you haven't ever made me feel that you're absent. You are such a cutiepie. My sweetu pumpkin pie. I love you baby❤️",
+            "I remember our first ever fight. Me drinking coffee🤣. That was really stupid of me and your reaction was valid😭😭. But I feel even though then it felt like we are falling apart but we didnt. We are together and stronger than ever. Though I don't want to fight with you ever again😭. I love you sweetuu babes.",
+            "The 'who loves more' game is so fun with you🤭🤭🤭. I love the banter we have going. It feels like we are such good partners. Soul ties hogye hain apne🤭🤭.",
+            "I cant stress on it enough how much I loved it when you ordered me pasta 🤭🤭🤭. Bhai it was so tasty but I enjoyed it because i felt the love you send with it 🤭🤭🥺. Baby I LOVE YOU SOO MUCH🤭🥺❤️❤️.",
+            "AND WE FINALLY HAD A VIDEO CALL. 😭🥺🤭🫶🏻🫶🏻. Bhai i loved it. I could see you live 🥺🥺. You are so cute, the way you smile, your giggling, your nose, your cheeks, the way they lift up when you smile😩😩🤭🫶🏻. Baby I felt closer to you video call pe🤭❤️.",
+            "Purva I just love you. I love you for the person you are. You are just so perfect. There's nothing I can say that can describe you. You're the most special person in my life. You are a part of my life. I have started thinking about you whenever I plan out my future. I think is this good for Purva as well. I just love you soo soo much🫶🏻🤭😩."
+        ];
+
+        // All flowers are bloomed from the start
+        let bloomedFlowers = 30;
+        const maxFlowers = 30;
+
+        function createFlower(index) {
+            const container = document.createElement('div');
+            container.className = 'flower-container';
+            
+            const isBlocked = index >= bloomedFlowers;
+            if (isBlocked) {
+                container.classList.add('locked');
+            } else {
+                container.onclick = () => showMessage(index);
+            }
+
+            container.innerHTML = `
+                <div class="flower sunflower">
+                    <div class="petals">
+                        <div class="petal"></div>
+                        <div class="petal"></div>
+                        <div class="petal"></div>
+                        <div class="petal"></div>
+                        <div class="petal"></div>
+                        <div class="petal"></div>
+                        <div class="petal"></div>
+                        <div class="petal"></div>
+                    </div>
+                    <div class="center">${index + 1}</div>
+                </div>
+                <div class="stem"></div>
+            `;
+
+            return container;
+        }
+
+        function showMessage(index) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const message = document.getElementById('modal-message');
+
+            title.textContent = `Sunflower #${index + 1}`;
+            message.textContent = messages[index];
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function init() {
+            const garden = document.getElementById('garden');
+            const progressText = document.getElementById('progress-text');
+
+            // Create all 30 flowers
+            for (let i = 0; i < maxFlowers; i++) {
+                garden.appendChild(createFlower(i));
+            }
+
+            // Update progress
+            progressText.textContent = `Flowers bloomed: ${bloomedFlowers} / ${maxFlowers}`;
+
+            // Add butterflies
+            for (let i = 0; i < 3; i++) {
+                const butterfly = document.createElement('div');
+                butterfly.className = 'butterfly';
+                butterfly.textContent = '🦋';
+                butterfly.style.left = Math.random() * 80 + 10 + '%';
+                butterfly.style.top = Math.random() * 60 + 20 + '%';
+                butterfly.style.animationDelay = i * 1 + 's';
+                document.body.appendChild(butterfly);
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
